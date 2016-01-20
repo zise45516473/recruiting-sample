@@ -1,0 +1,34 @@
+<div class ="page_header">
+  <h1> Import the Spreadsheet </h1>
+</div>
+<div class="container col-sm-8 pull-left">
+<% if(!candidates){ %>
+<div class="form-group">
+  <form action="/load" method="post" enctype="multipart/form-data">
+    <input type="file" name="csvinput" accept=".csv">
+    <p class="help-block">Please upload the current tracking spreadsheet in CSV format.</p>
+    <input type="submit" class="btn btn-default">Do it!</input>
+  </form>
+</div>
+<% } %>
+<% if(candidates){ %>
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% candidates.forEach(function(candidate){ %>
+      <tr>
+        <td><%=candidate.firstName%> </td>
+        <td><%=candidate.firstName%> </td>
+        <td><%=candidate.email%> </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+</div>

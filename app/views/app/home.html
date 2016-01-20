@@ -1,0 +1,317 @@
+<div class ="page_header">
+</div>
+<!-- Yo: Don't think you want to nest containers like this- layout is wonky because of it
+TODO: Rewrite with either floats or columns, not both -->
+<div class="container col-sm-6 pull-left">
+  <% candidates.forEach(function(state){ %>
+    <div class="row container state" input_id="<%= state.id %>">
+
+        <div class="col-sm-7">
+        <h2><%= state.name%></h2>
+        <div class="well">
+        <% state.candidates.forEach( function (candidate) {%>
+          <div class="row">
+              <div class="candidateRow" input_id="<%=candidate.CandidateId%>" owner="<%=candidate.Owner_PersonId%>" duedate="<%=candidate.DueDate%>">
+                <div class="col-sm-8">
+                  <h4><i class="fa fa-comments-o noteslink" input_id="<%=candidate.CandidateId%>" style="margin-right:10px;cursor:pointer"></i><%=candidate.firstName%> <%=candidate.lastName%><span style='font-size:.75em;color:gray'> (<%=candidate.email%>)</span></h4>
+                  <span class="text-muted"><%=candidate.tagLine%></span>
+                </div>
+                <div class="col-sm-3 pull-right">
+                  <button type="button" class="btn btn-info btn-xs changelink">Change Status</button>
+                  <div style="margin-top:5px">
+                    Due <span style="color:<%=: candidate.DueDate | formatDueDateColor %>"><%=: candidate.DueDate | formatDueDate %></span>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="inputor placeholder hidden note_text_area" contenteditable="true" input_id="<%=candidate.CandidateId%>" style="min-height: 70px;"><%=candidate.notes%></div>
+        <%})%>
+      </div>
+      </div>
+    </div>
+  <%})%>
+</div>
+
+<div class="col-sm-5 pull-right" style="margin-top:30px">
+  <div class="row col-sm-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">Filter by:</div>
+      <div class="panel-body">
+        <div>
+          <span style="margin-right:10px">Recruiter: </span>
+          <div class="btn-group">
+              <button id="recruit_btn" type="button" class="btn btn-default dropdown-toggle form-control col-sm-8" data-toggle="dropdown">All <span class="caret"></span></button>
+
+              <ul id="recruit_list" class="dropdown-menu" style="cursor:pointer">
+                <li input_id="all" name="all" selected><a>All</a></li>
+                <% recruiters.forEach(function(recruiter){ %>
+                <li input_id="<%= recruiter.PersonId %>" name="<%= recruiter.FirstName %>"><a><%= recruiter.FirstName + " " +recruiter.LastName %></a></li>
+                <% })%>
+              </ul>
+              <input id="recruiter_filter_value" type="hidden" value='all'/>
+          </div>
+        </div>
+        <div style="margin-top:5px">
+          <span style="margin-right:24px">Owner: </span>
+          <div class="btn-group">
+              <button id="owner_btn" type="button" class="btn btn-default dropdown-toggle form-control col-sm-8" data-toggle="dropdown">All <span class="caret"></span></button>
+              <ul id="owner_list" class="dropdown-menu" style="cursor:pointer">
+                <li input_id="all" name="all" selected><a>All</a></li>
+                <% persons.forEach(function(person){ %>
+                <li input_id="<%= person.PersonId %>" name="<%= person.FirstName %>"><a><%= person.FirstName + " " + person.LastName %></a></li>
+                <% })%>
+              </ul>
+              <input id="owner_filter_value" type="hidden" value='all'/>
+          </div>
+      </div>
+      </div>
+    </div>
+  </div>
+  <div class="row col-sm-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">Active</div>
+      <div class="panel-body">
+        <% candidates.forEach(function(state){ %>
+          <div class="row">
+              <div class="col-sm-5">
+                  <i class="glyphicon glyph<%= state.icon%>"></i>
+                  <%= state.name%> (<%= state.candidates.length%>)
+              </div>
+              <div class="col-sm-5">
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-success" style="width:<%=: state.candidates | formatBarGreen %>%">
+                    </div>
+                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="width:<%=: state.candidates | formatBarYellow %>%">
+                    </div>
+                    <div class="progress-bar progress-bar-danger" style="width:<%=: state.candidates | formatBarRed %>%">
+                    </div>
+                  </div>
+              </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="panel panel-default" style="display:none">
+      <div class="panel-heading">Historical (All)</div>
+      <div class="panel-body">
+        <div class="loading" id="funnel_target_all">
+          <div style="color:#888">
+              <table style="width:100%; height:60px;text-align:center;">
+                <tr id="funnel_row_all">
+                </tr>
+              </table>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-default" style="display:none">
+      <div class="panel-heading">Historical (7-Day)</div>
+      <div class="panel-body">
+        <div class="loading" id="funnel_target_seven">
+          <div style="color:#888">
+              <table style="width:100%; height:60px;text-align:center;">
+                <tr id="funnel_row_seven">
+                </tr>
+              </table>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container col-md-12">
+      <div id="funnelChart">
+      </div>
+    </div>
+
+    <div class="container col-md-12">
+      <div id="funnelChart7Days">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Modal dialog to add positions -->
+<div class="modal" id="addNewPositionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Add New Position</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="inputPositionName">Position Name</label>
+          <input type="text" class="form-control" name="positionName" id="inputPositionName" placeholder="Position Name">
+        </div>
+          <div class="form-group">
+            <label for="inputPositionDescription">Description</label>
+            <input type="text" class="form-control" name="description" id="inputPositionDescription" placeholder="Description">
+          </div>
+        <div class="form-group">
+          <label for="inputRequisitionLink">Requisition Link</label>
+          <input type="text" class="form-control" name="reqLink" id="inputRequisitionLink" placeholder="Link to Requisition">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" id="btnSavePosition" data-saving-text="Saving..." class="btn btn-primary">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal" id="changeStateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Change a Candidate's Status</h4>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label for="stage_btn" class="col-sm-4 control-label">Change stage: </label>
+          <div class="btn-group">
+              <button id="stage_btn" type="button" class="btn btn-default dropdown-toggle form-control col-sm-8" data-toggle="dropdown"><span class="caret"></span></button>
+
+              <ul id="state_list" class="dropdown-menu">
+                <% all_states.forEach(function(state){ %>
+                <li input_id="<%= state.StageId %>" name="<%= state.Name %>"><a><%= state.Name %></a></li>
+                <% })%>
+              </ul>
+              <input id="stage_value" type="hidden"/>
+              <input id="candidate_value" type="hidden"/>
+
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <label for="owner_change_btn" class="col-sm-4 control-label">Change owner: </label>
+          <div class="btn-group">
+              <button id="owner_change_btn" type="button" class="btn btn-default dropdown-toggle form-control col-sm-8" data-toggle="dropdown"><span class="caret"></span></button>
+
+              <ul id="owner_change_list" class="dropdown-menu">
+                <% persons.forEach(function(person){ %>
+                <li input_id="<%= person.PersonId %>" name="<%= person.PersonId %>"><a><%= person.FirstName + " " + person.LastName %></a></li>
+                <% })%>
+              </ul>
+              <input id="owner_change_value" type="hidden"/>
+          </div>
+        </div>
+          <div style="margin-top:10px">
+            <label class="col-sm-4 control-label">Change due date: </label>
+              <div class='input-group date col-sm-3 datetimepicker'>
+                  <input type='text' class="form-control" />
+                  <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                </div>
+              <input id="due_date_value" type="hidden"/>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" id="btnSaveStage" data-saving-text="Saving..." class="btn btn-primary">Save Change</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+//Used to get query string
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+$(function () {
+
+  //Let's load the funnels on page load- we'll likely need UI for loading
+  $("#funnel_target_all").ready(getFunnelStats(getUrlVars()["rec"], getUrlVars()["own"]));
+
+  //Expand and hide notes
+  $(".noteslink").click(function(e){
+    $(".note_text_area[input_id='"+$(this).attr("input_id")+"']").toggleClass("hidden");
+  });
+
+  //Wayne is even more lazy and is saving the notes to the DB whenever the text box is blured/loses focus...
+  $(".note_text_area").blur(function(e){
+    var note = $(this).text();
+    var candidateId = $(this).attr("input_id");
+    saveNote(candidateId, note);
+  });
+
+  //Work needed to change status
+  $(".changelink").click(function(e){
+    var parent_id = $(this).closest(".candidateRow").attr("input_id");
+    var old_state_id = $(this).closest(".state").attr("input_id");
+    $("#stage_value").val(old_state_id);
+    $("#candidate_value").val(parent_id);
+
+    //Populate state list selected option
+    var name = $("#state_list").find("li[input_id='"+old_state_id+"']").text();
+    $("#stage_btn").html(name + " <span class='caret'></span>");
+
+    //Populate owner list options dropdown
+    var old_owner_id = $(this).closest(".candidateRow").attr("owner");
+    var owner = $("#owner_change_list").find("li[name='"+old_owner_id+"']").text();
+    $("#owner_change_value").val(old_owner_id);
+    $("#owner_change_btn").html(owner + " <span class='caret'></span>");
+
+    //Populate current date
+    var old_date = $(this).closest(".candidateRow").attr("duedate");
+    $("#due_date_value").val(old_date);
+    $('.datetimepicker').datetimepicker({
+                    defaultDate: moment(old_date)
+                });
+
+    //This will now kick off three AJAX calls instead of 1.  Too lazy to refactor handlers now.
+    $("#changeStateModal").modal();
+    $("#btnSaveStage").click(saveState);
+  });
+  //Reload on drop down selection
+  $("#recruit_list").find("li").click(function(e){
+    $("#recruiter_filter_value").val($(this).attr("input_id"));
+    document.location = "/?rec="+$(this).attr("input_id")+"&own="+$("#owner_filter_value").val();
+  });
+  $("#owner_list").find("li").click(function(e){
+    $("#owner_filter_value").val($(this).attr("input_id"));
+    document.location = "/?rec="+$("#recruiter_filter_value").val()+"&own="+$(this).attr("input_id");
+  });
+  //Set the right value in dropdown on load
+  var recruiter_filter = getUrlVars()["rec"];
+  var owner_filter = getUrlVars()["own"];
+  if(recruiter_filter && recruiter_filter != "all"){
+    $("#recruiter_filter_value").val(recruiter_filter);
+    var name = $("#recruit_list").find("li[input_id='"+recruiter_filter+"']").text();
+    $("#recruit_btn").html(name + " <span class='caret'></span>");
+
+  }
+  if(owner_filter && owner_filter != "all"){
+    $("#owner_filter_value").val(recruiter_filter);
+    var name = $("#owner_list").find("li[input_id='"+owner_filter+"']").text();
+    $("#owner_btn").html(name + " <span class='caret'></span>");
+
+  }
+  //Change the user's state in a modal
+  $("#state_list").find("li").click(function(e){
+    $("#stage_value").val($(this).attr("input_id"));
+    $("#stage_btn").html($(this).text() + " <span class='caret'></span>");
+  });
+    //Change the user's owner in a modal
+  $("#owner_change_list").find("li").click(function(e){
+    $("#owner_change_value").val($(this).attr("input_id"));
+    $("#owner_change_btn").html($(this).text() + " <span class='caret'></span>");
+  });
+
+});
+
+</script>

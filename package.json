@@ -1,0 +1,22 @@
+{
+  "name": "express-app",
+  "version": "1.0.0",
+
+  "dependencies": {
+    "klass":  "1.x.x",
+    "underscore": "1.x.x",
+    "vows": "0.x.x",
+    "cluster": "0.x.x",
+    "express": "2.x.x",
+    "ejs": "0.x.x",
+    "mysql" : "x",
+    "passport" :"x",
+    "express-session" :"x",
+    "passport-local" :"x",
+	"fast-csv" :"x",
+	"connect-busboy" :"x",
+	"reformed" :"x",
+	"keen.io" :"x",
+  "moment": "x"
+  }
+}

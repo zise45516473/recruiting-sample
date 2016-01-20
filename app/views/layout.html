@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>Candidate Tracker</title>
+
+  <link rel="stylesheet" href="/css/app.css" type="text/css" />
+
+  <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css" />
+  <link rel="stylesheet" href="/css/bootstrap.datetimepicker.css" type="text/css" />
+
+  <!--[if lt IE 9]>
+  <script type="text/javascript">
+  (function(){if(!/*@cc_on!@*/0)return;var e="abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,mark,menu,meter,nav,output,progress,section,time,video".split(','),i=0,length=e.length;while(i<length){document.createElement(e[i++])}})();
+  </script>
+  <![endif]-->
+  <style>
+  
+
+  .loading{
+    background-image: url("/images/loading.gif");
+    background-repeat: no-repeat;
+    left:125px;
+    top:20px;
+    position:relative;
+  }
+
+  .note_text_area.placeholder {
+  color: #888;
+  }
+  .note_text_area {
+  color: #555;
+  border-radius: 4px;
+  background: white;
+  border: 1px solid #dadada;
+  border: 1px solid #ccc;
+  padding: 7px;
+  padding: 5px 8px;
+  margin-top:5px;
+  margin-bottom:15px;
+  }
+
+  </style>
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Candidate Tracker</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/candidate/add">Add Candidate</a></li>
+        <li><a href="/import">Import Candidate</a></li>
+        <!--
+	    <li><a href="/adduser">Add User</a></li>	 
+	    -->   
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+<script type="text/javascript" src="/js/app.js"></script>
+<script type="text/javascript" src="/js/jquery.2.1.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.datetimepicker.js"></script>
+<script type="text/javascript" src="/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="/highcharts/funnel.js"></script>
+
+<div class="container center" style="margin-top:-20px">
+  <%- body %>
+</div>
+
+</body>
+</html>
